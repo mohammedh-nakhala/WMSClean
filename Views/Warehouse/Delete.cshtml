@@ -1,0 +1,26 @@
+﻿@model WMSClean.Models.Warehouse
+
+@{
+    ViewData["Title"] = "Delete Warehouse";
+}
+
+<h1>Delete Warehouse</h1>
+
+<div>
+    <h3>Are you sure you want to delete this?</h3>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">Name</dt>
+        <dd class="col-sm-10">@Model.Name</dd>
+        <dt class="col-sm-2">Max Items</dt>
+        <dd class="col-sm-10">@Model.MaxItems</dd>
+        <dt class="col-sm-2">Max Weight</dt>
+        <dd class="col-sm-10">@Model.MaxWeightKg kg</dd>
+    </dl>
+
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="Id" />
+        <input type="submit" value="Delete" class="btn btn-danger" />
+        <a asp-action="Index" class="btn btn-secondary">Back</a>
+    </form>
+</div>

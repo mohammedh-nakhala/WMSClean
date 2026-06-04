@@ -1,0 +1,56 @@
+﻿@{
+    var product = ViewBag.Product as WMSClean.Models.Product;
+    var totalFee = ViewBag.TotalFee as decimal?;
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3>Checkout</h3>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <h5>Order Summary</h5>
+                        <p><strong>Product:</strong> @product?.Name</p>
+                        <p><strong>Amount:</strong> <span class="text-success">@totalFee?.ToString("C")</span></p>
+                    </div>
+
+                    <form asp-action="ProcessPayment" method="post">
+                        <input type="hidden" name="productId" value="@product?.Id" />
+
+                        <div class="mb-3">
+                            <label class="form-label">Payment Method</label>
+                            <select name="paymentMethod" class="form-select">
+                                <option value="CreditCard">Credit Card</option>
+                                <option value="Mock">Mock Payment (Test)</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Card Number</label>
+                            <input name="cardNumber" class="form-control" placeholder="4242 4242 4242 4242" />
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label class="form-label">Expiry Date</label>
+                                <input name="expiryDate" class="form-control" placeholder="MM/YY" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">CVV</label>
+                                <input name="cvv" class="form-control" placeholder="123" />
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 mt-3">
+                            <button type="submit" class="btn btn-success">Pay @totalFee?.ToString("C")</button>
+                            <a asp-controller="Product" asp-action="Index" class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

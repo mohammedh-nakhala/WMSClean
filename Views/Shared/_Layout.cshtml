@@ -1,0 +1,534 @@
+﻿<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - WMS</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    
+    <style>
+        * {
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.2s ease;
+        }
+
+        /* ========== الوضع الفاتح (Light Mode - Default) ========== */
+        body {
+            background-color: #F8FAFC;
+            color: #1E293B;
+        }
+
+        /* شريط التنقل */
+        .navbar {
+            background: #1E3A5F !important;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            color: #FFFFFF !important;
+            font-size: 1.5rem;
+        }
+
+        .navbar-brand span {
+            color: #2C7DA0;
+        }
+
+        .nav-link {
+            font-weight: 500;
+            color: #FFFFFF !important;
+            transition: all 0.3s;
+        }
+
+        .nav-link:hover {
+            color: #2C7DA0 !important;
+            transform: translateY(-2px);
+        }
+
+        /* الكروت */
+        .card {
+            background-color: #FFFFFF;
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+        }
+
+        .card-header {
+            background-color: transparent;
+            border-bottom: 1px solid #E2E8F0;
+            font-weight: 600;
+        }
+
+        /* الأزرار */
+        .btn-primary {
+            background-color: #2C7DA0;
+            border: none;
+            border-radius: 10px;
+            padding: 10px 25px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .btn-primary:hover {
+            background-color: #1F5068;
+            transform: translateY(-2px);
+        }
+
+        .btn-warning {
+            background-color: #F39C12;
+            border: none;
+            color: #1E293B;
+        }
+
+        .btn-warning:hover {
+            background-color: #E67E22;
+        }
+
+        .btn-danger {
+            background-color: #EF4444;
+            border: none;
+        }
+
+        .btn-success {
+            background-color: #10B981;
+            border: none;
+        }
+
+        /* الجداول */
+        .table {
+            color: #1E293B;
+        }
+
+        .table thead th {
+            backgroundColor: #F1F5F9;
+            color: #0F172A;
+            font-weight: 600;
+            border-bottom: 2px solid #E2E8F0;
+        }
+
+        .table tbody tr:hover {
+            background-color: #F8FAFC;
+        }
+
+        /* الفوتر */
+        .footer {
+            background-color: #FFFFFF;
+            color: #475569;
+            border-top: 1px solid #E2E8F0;
+        }
+
+        /* Dropdown */
+        .dropdown-menu {
+            background-color: #FFFFFF;
+            border: 1px solid #E2E8F0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .dropdown-item:hover {
+            background-color: #F1F5F9;
+            color: #2C7DA0;
+        }
+
+        /* ========== الوضع المظلم (Dark Mode) ========== */
+        body.dark-mode {
+            background-color: #0F172A;
+            color: #E2E8F0;
+        }
+
+        body.dark-mode .navbar {
+            background: #2C3E66 !important;
+        }
+
+        body.dark-mode .navbar-brand {
+            color: #FFFFFF !important;
+        }
+
+        body.dark-mode .nav-link {
+            color: #E2E8F0 !important;
+        }
+
+        body.dark-mode .nav-link:hover {
+            color: #1E88E5 !important;
+        }
+
+        body.dark-mode .card {
+            background-color: #1E293B;
+            color: #E2E8F0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        body.dark-mode .card-header {
+            border-bottom-color: #334155;
+        }
+
+        body.dark-mode .table {
+            color: #E2E8F0;
+        }
+
+        body.dark-mode .table thead th {
+            background-color: #1E293B;
+            color: #F1F5F9;
+            border-bottom-color: #334155;
+        }
+
+        body.dark-mode .table tbody tr {
+            border-bottom-color: #334155;
+        }
+
+        body.dark-mode .table tbody tr:hover {
+            background-color: #334155;
+        }
+
+        body.dark-mode .footer {
+            background-color: #1E293B;
+            color: #94A3B8;
+            border-top-color: #334155;
+        }
+
+        body.dark-mode .dropdown-menu {
+            background-color: #1E293B;
+            border-color: #334155;
+        }
+
+        body.dark-mode .dropdown-item {
+            color: #E2E8F0;
+        }
+
+        body.dark-mode .dropdown-item:hover {
+            background-color: #334155;
+            color: #1E88E5;
+        }
+
+        body.dark-mode .btn-outline-secondary {
+            color: #E2E8F0;
+            border-color: #475569;
+        }
+
+        body.dark-mode .btn-outline-secondary:hover {
+            background-color: #334155;
+            color: #FFFFFF;
+        }
+
+        body.dark-mode .alert-warning {
+            background-color: #E67E22;
+            color: #0F172A;
+        }
+
+        body.dark-mode .alert-info {
+            background-color: #1E88E5;
+            color: #FFFFFF;
+        }
+
+        /* Animations */
+        .dropdown-menu {
+            animation: fadeInDown 0.3s ease;
+        }
+
+        @@keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .badge-success { background-color: #10B981; color: white; }
+        .badge-warning { background-color: #F59E0B; color: #1E293B; }
+        .badge-danger { background-color: #EF4444; color: white; }
+        .badge-info { background-color: #1E88E5; color: white; }
+
+        .identity-container {
+            background: linear-gradient(135deg, #F8FAFC 0%, #E2E8F0 100%);
+            min-height: calc(100vh - 200px);
+            padding: 20px 0;
+        }
+
+        body.dark-mode .identity-container {
+            background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+        }
+
+        .identity-card {
+            background: #FFFFFF;
+            border: none;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        body.dark-mode .identity-card {
+            background: #1E293B;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .identity-card .card-header {
+            background: linear-gradient(135deg, #1E3A5F 0%, #2C7DA0 100%);
+            color: white;
+            padding: 20px;
+            border-bottom: none;
+        }
+
+        body.dark-mode .identity-card .card-header {
+            background: linear-gradient(135deg, #2C3E66 0%, #1E88E5 100%);
+        }
+
+        .identity-card .btn-primary {
+            background: linear-gradient(135deg, #2C7DA0 0%, #1F5068 100%);
+            border: none;
+            border-radius: 10px;
+            padding: 10px 20px;
+        }
+
+        .identity-card .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(44,125,160,0.3);
+        }
+
+        .identity-card .form-control {
+            border: 1px solid #E2E8F0;
+            border-radius: 10px;
+            padding: 12px 15px;
+        }
+
+        body.dark-mode .identity-card .form-control {
+            background-color: #0F172A;
+            border-color: #334155;
+            color: #E2E8F0;
+        }
+
+        .identity-card .form-control:focus {
+            border-color: #2C7DA0;
+            box-shadow: 0 0 0 3px rgba(44,125,160,0.2);
+        }
+    </style>
+
+    <script>
+        (function() {
+            if (localStorage.getItem('darkMode') === 'true') {
+                document.documentElement.classList.add('dark-mode');
+                document.body.classList.add('dark-mode');
+            }
+        })();
+
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            document.documentElement.classList.toggle('dark-mode');
+            localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+            updateDarkModeText();
+        }
+
+        function updateDarkModeText() {
+            const isDark = document.body.classList.contains('dark-mode');
+            const textSpan = document.getElementById('darkModeText');
+            if (textSpan) {
+                textSpan.textContent = isDark ? 'Light' : 'Dark';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            if (localStorage.getItem('darkMode') === 'true') {
+                document.body.classList.add('dark-mode');
+                document.documentElement.classList.add('dark-mode');
+            }
+            updateDarkModeText();
+        });
+
+        function changeLanguage(lang) {
+            fetch('/Home/SetLanguage?lang=' + lang, { method: 'POST' })
+                .then(() => location.reload())
+                .catch(() => location.reload());
+        }
+    </script>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-warehouse"></i> W<span>MS</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <!-- القائمة الرئيسية -->
+                <ul class="navbar-nav me-auto">
+                    <!-- AI Assistant (الجميع - حتى غير المسجل) -->
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="ChatBot" asp-action="Index">
+                            <i class="fas fa-robot"></i> AI Assistant
+                        </a>
+                    </li>
+                    
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <!-- Dashboard (فقط SuperAdmin و Admin) -->
+                        @if (User.IsInRole("SuperAdmin") || User.IsInRole("Admin"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Dashboard" asp-action="Index">
+                                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                                </a>
+                            </li>
+                        }
+                        
+                        <!-- المستودعات والمناطق والمنتجات (SuperAdmin و Admin) -->
+                        @if (User.IsInRole("SuperAdmin") || User.IsInRole("Admin"))
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                                    <i class="fas fa-warehouse"></i> Storage
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" asp-controller="Warehouse" asp-action="Index">
+                                        <i class="fas fa-building"></i> Warehouses</a>
+                                    </li>
+                                    <li><a class="dropdown-item" asp-controller="StorageZone" asp-action="Index">
+                                        <i class="fas fa-layer-group"></i> Zones</a>
+                                    </li>
+                                    <li><a class="dropdown-item" asp-controller="Product" asp-action="Index">
+                                        <i class="fas fa-boxes"></i> Products</a>
+                                    </li>
+                                </ul>
+                            </li>
+                        }
+                        
+                        <!-- طلبات (الكل) -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                                <i class="fas fa-calendar-alt"></i> Requests
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" asp-controller="Schedule" asp-action="MyRequests">
+                                    <i class="fas fa-list"></i> My Requests</a>
+                                </li>
+                                <li><a class="dropdown-item" asp-controller="Schedule" asp-action="Create">
+                                    <i class="fas fa-plus-circle"></i> New Request</a>
+                                </li>
+                            </ul>
+                        </li>
+                        
+                        <!-- مدفوعات (الكل) -->
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Payment" asp-action="MyPayments">
+                                <i class="fas fa-history"></i> Payments
+                            </a>
+                        </li>
+                        
+                        <!-- إدارة الطلبات والتقارير والمستخدمين (فقط SuperAdmin) -->
+                        @if (User.IsInRole("SuperAdmin"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Schedule" asp-action="AllRequests">
+                                    <i class="fas fa-tasks"></i> Manage Requests
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Report" asp-action="Index">
+                                    <i class="fas fa-chart-bar"></i> Reports
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="User" asp-action="Index">
+                                    <i class="fas fa-users"></i> Users
+                                </a>
+                            </li>
+                        }
+                    }
+                </ul>
+                
+                <!-- القائمة اليسرى (اللغة، المظهر، التنبيهات، المستخدم) -->
+                <ul class="navbar-nav">
+                    <!-- ★★★★★ جرس التنبيهات (يظهر فقط للمستخدم المسجل) ★★★★★ -->
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <li class="nav-item me-1">
+                            @await Component.InvokeAsync("Notification")
+                        </li>
+                    }
+                    
+                    <!-- أزرار اللغة -->
+                    <li class="nav-item">
+                        <button class="btn btn-outline-light me-1" onclick="changeLanguage('en')" style="border-radius: 20px;">
+                            🇬🇧 EN
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="btn btn-outline-light me-2" onclick="changeLanguage('ar')" style="border-radius: 20px;">
+                            🇸🇦 AR
+                        </button>
+                    </li>
+                    
+                    <!-- زر Dark Mode -->
+                    <li class="nav-item">
+                        <button class="btn btn-outline-light me-2" onclick="toggleDarkMode()" style="border-radius: 20px;">
+                            <i class="fas fa-moon"></i> <span id="darkModeText">Dark</span>
+                        </button>
+                    </li>
+                    
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-user-circle"></i> @User.Identity.Name
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="/Identity/Account/Manage">
+                                    <i class="fas fa-user-cog"></i> Profile</a>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <form asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Page("/", new { area = "" })" method="post">
+                                        <button type="submit" class="dropdown-item" style="border: none; background: none; width: 100%; text-align: left;">
+                                            <i class="fas fa-sign-out-alt"></i> Logout
+                                        </button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link btn btn-outline-light" asp-area="Identity" asp-page="/Account/Login">Login</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link btn btn-primary text-white" asp-area="Identity" asp-page="/Account/Register">Register</a>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main role="main" class="pb-3">
+        <div class="identity-container">
+            <div class="container mt-4">
+                @RenderBody()
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer mt-5 py-4">
+        <div class="container text-center">
+            &copy; @DateTime.Now.Year Warehouse Management System - All Rights Reserved
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,88 @@
+﻿@model WMSClean.Models.Product
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Tracking Label - @Model.TrackingNumber</title>
+    <style>
+            body {
+                font-family: Arial, sans-serif;
+                padding: 20px;
+            }
+
+            .label {
+                border: 2px solid #333;
+                padding: 20px;
+                width: 350px;
+                margin: 0 auto;
+                text-align: center;
+                border-radius: 10px;
+            }
+
+            .barcode {
+                font-family: monospace;
+                font-size: 24px;
+                letter-spacing: 4px;
+                margin: 20px 0;
+            }
+
+            .title {
+                font-size: 18px;
+                font-weight: bold;
+                color: #28a745;
+            }
+
+            hr {
+                margin: 15px 0;
+            }
+
+            .no-print {
+                text-align: center;
+                margin-top: 20px;
+            }
+
+            button {
+                padding: 10px 20px;
+                background: #28a745;
+                color: white;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+            }
+
+            @@media print {
+                .no-print {
+                    display: none;
+                }
+            }
+    </style>
+</head>
+<body>
+    <div class="label">
+        <div class="title">WAREHOUSE MANAGEMENT SYSTEM</div>
+        <hr>
+        <h3>TRACKING LABEL</h3>
+        <div class="barcode">✦ @Model.TrackingNumber ✦</div>
+        <hr>
+        <p><strong>Product:</strong> @Model.Name</p>
+        <p><strong>Weight:</strong> @Model.WeightKg kg</p>
+        <p><strong>Warehouse:</strong> @Model.Warehouse?.Name</p>
+        <p><strong>Invoice:</strong> @Model.InvoiceNumber</p>
+        <hr>
+        <p><strong>Sender:</strong> @Model.SenderEmail</p>
+        <p><strong>Receiver:</strong> @Model.ReceiverEmail</p>
+        <hr>
+        <small>Entry Date: @Model.EntryDate.ToString("yyyy-MM-dd HH:mm")</small>
+    </div>
+    <div class="no-print">
+        <button onclick="window.print();">Print Label</button>
+        <br><br>
+        <a href="/Products">Back to Products</a>
+    </div>
+</body>
+</html>

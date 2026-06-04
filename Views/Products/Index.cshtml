@@ -1,0 +1,168 @@
+﻿@model IEnumerable<WMSClean.Models.Product>
+
+@{
+    ViewData["Title"] = "Products";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
+        <h1><i class="fas fa-boxes"></i> Products</h1>
+        <div>
+            @if (User.IsInRole("SuperAdmin") || User.IsInRole("Admin"))
+            {
+                <a asp-action="Create" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> New Product
+                </a>
+            }
+            <a asp-action="Search" class="btn btn-outline-secondary ms-2">
+                <i class="fas fa-search"></i> Advanced Search
+            </a>
+        </div>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info text-center">
+            <i class="fas fa-info-circle"></i> No products found.
+            @if (User.IsInRole("SuperAdmin") || User.IsInRole("Admin"))
+            {
+                <a asp-action="Create">Click here</a>
+            }
+            to add your first product.
+        </div>
+    }
+    else
+    {
+        <div class="row g-4">
+            @foreach (var item in Model)
+            {
+                var endDate = item.ExitDate ?? DateTime.Now;
+                var totalDays = (endDate - item.EntryDate).TotalDays;
+                if (totalDays < 1) totalDays = 1;
+                
+                var weightFactor = Math.Max(1, item.WeightKg / 50);
+                var totalFee = (decimal)totalDays * item.PricePerCubicMeterPerDay * (decimal)item.VolumeCbm * (decimal)weightFactor;
+
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-header @(item.Status == "In Warehouse" ? "bg-success" : "bg-secondary") text-white">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0"><i class="fas fa-box"></i> @item.Name</h5>
+                                <span class="badge bg-light text-dark">@item.Status</span>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <!-- Tracking & Invoice -->
+                            <div class="mb-3">
+                                <small class="text-muted d-block">Tracking Number</small>
+                                <code>@item.TrackingNumber</code>
+                            </div>
+                            <div class="mb-3">
+                                <small class="text-muted d-block">Invoice</small>
+                                <strong>@item.InvoiceNumber</strong>
+                            </div>
+
+                            <!-- Dimensions -->
+                            <div class="row mb-2">
+                                <div class="col-12">
+                                    <small class="text-muted d-block">Dimensions</small>
+                                    <strong>@item.LengthCm × @item.WidthCm × @item.HeightCm cm</strong>
+                                    <br />
+                                    <small class="text-muted">Volume: @item.VolumeCbm.ToString("F3") m³</small>
+                                </div>
+                            </div>
+
+                            <!-- Weight & Warehouse -->
+                            <div class="row mb-3">
+                                <div class="col-6">
+                                    <small class="text-muted d-block">Weight</small>
+                                    <strong>@item.WeightKg kg</strong>
+                                </div>
+                                <div class="col-6">
+                                    <small class="text-muted d-block">Warehouse</small>
+                                    <strong>@item.Warehouse?.Name</strong>
+                                </div>
+                            </div>
+
+                            <!-- Product Type & Zone -->
+                            <div class="row mb-3">
+                                <div class="col-6">
+                                    <small class="text-muted d-block">Product Type</small>
+                                    <span class="badge bg-info">@item.ProductType</span>
+                                </div>
+                                <div class="col-6">
+                                    <small class="text-muted d-block">Storage Zone</small>
+                                    <strong>@(item.StorageZone?.ZoneName ?? "Auto-assigned")</strong>
+                                </div>
+                            </div>
+
+                            <!-- Storage Duration & Fee -->
+                            <div class="bg-light p-2 rounded mb-3">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <small class="text-muted d-block">Storage Duration</small>
+                                        <strong>@Math.Round(totalDays, 2) days</strong>
+                                    </div>
+                                    <div class="col-6">
+                                        <small class="text-muted d-block">Storage Fee</small>
+                                        <strong class="text-success">@totalFee.ToString("C")</strong>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Calculation Formula Summary -->
+                            <div class="small text-muted mb-2">
+                                <small>@item.VolumeCbm.ToString("F3") m³ × @Math.Round(totalDays, 0) days × @item.PricePerCubicMeterPerDay.ToString("C") × @weightFactor.ToString("F2") = @totalFee.ToString("C")</small>
+                            </div>
+
+                            <!-- Dates -->
+                            <div class="small text-muted">
+                                <div>Entry: @item.EntryDate.ToString("yyyy-MM-dd HH:mm")</div>
+                                @if (item.ExitDate.HasValue)
+                                {
+                                    <div>Exit: @item.ExitDate.Value.ToString("yyyy-MM-dd HH:mm")</div>
+                                }
+                            </div>
+                        </div>
+                        <div class="card-footer bg-transparent">
+                            <div class="btn-group w-100" role="group">
+                                @if (User.IsInRole("SuperAdmin") || User.IsInRole("Admin"))
+                                {
+                                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-info" title="Details">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a asp-action="PrintLabel" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary" title="Print Label">
+                                        <i class="fas fa-print"></i> Label
+                                    </a>
+                                    @if (item.Status != "Exited")
+                                    {
+                                        <a asp-action="ExitProduct" asp-route-id="@item.Id" class="btn btn-sm btn-outline-warning" onclick="return confirm('Exit this product?')" title="Exit Product">
+                                            <i class="fas fa-sign-out-alt"></i> Exit
+                                        </a>
+                                    }
+                                    <a asp-action="FeeDetails" asp-route-id="@item.Id" class="btn btn-sm btn-outline-info" title="Fee Details">
+                                        <i class="fas fa-dollar-sign"></i> Fee
+                                    </a>
+                                }
+                                <!-- زر الدفع - يظهر للجميع (SuperAdmin, Admin, Customer) -->
+                                <a asp-controller="Payment" asp-action="Checkout" asp-route-productId="@item.Id" class="btn btn-sm btn-success" title="Pay Now">
+                                    <i class="fas fa-credit-card"></i> Pay
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        // Tooltip initialization if needed
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+        });
+    </script>
+}

@@ -1,0 +1,63 @@
+﻿@{
+    ViewData["Title"] = "Home";
+}
+
+<div class="container mt-5">
+    <div class="row align-items-center">
+        <div class="col-lg-6">
+            <h1 class="display-4 fw-bold" style="color: #2C7DA0;">
+                Welcome to <span style="color: #1E3A5F;">WMS</span>
+            </h1>
+            <p class="lead mt-3">Warehouse Management System</p>
+            <p>Manage your inventory, track shipments, automate scheduling, and get powerful insights with our comprehensive warehouse management system.</p>
+            @if (!User.Identity.IsAuthenticated)
+            {
+                <a href="/Identity/Account/Register" class="btn btn-primary btn-lg mt-3 me-2">
+                    <i class="fas fa-user-plus"></i> Get Started
+                </a>
+                <a href="/Identity/Account/Login" class="btn btn-outline-secondary btn-lg mt-3">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </a>
+            }
+            else
+            {
+                <a href="/Dashboard" class="btn btn-primary btn-lg mt-3">
+                    <i class="fas fa-tachometer-alt"></i> Go to Dashboard
+                </a>
+            }
+        </div>
+        <div class="col-lg-6 text-center">
+            <img src="https://cdn-icons-png.flaticon.com/512/2331/2331970.png" alt="Warehouse" class="img-fluid" style="max-width: 80%;">
+        </div>
+    </div>
+
+    <div class="row mt-5 g-4">
+        <div class="col-md-4">
+            <div class="card h-100 text-center p-4">
+                <div class="card-body">
+                    <i class="fas fa-boxes fa-3x" style="color: #2C7DA0;"></i>
+                    <h5 class="card-title mt-3">Inventory Management</h5>
+                    <p class="card-text">Track all incoming and outgoing goods with timestamps and full history.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 text-center p-4">
+                <div class="card-body">
+                    <i class="fas fa-calendar-alt fa-3x" style="color: #2C7DA0;"></i>
+                    <h5 class="card-title mt-3">Smart Scheduling</h5>
+                    <p class="card-text">Automatic scheduling when warehouse is full. Admin approval workflow.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 text-center p-4">
+                <div class="card-body">
+                    <i class="fas fa-chart-line fa-3x" style="color: #2C7DA0;"></i>
+                    <h5 class="card-title mt-3">Analytics & Reports</h5>
+                    <p class="card-text">Generate Excel reports, track revenue, and monitor warehouse capacity.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

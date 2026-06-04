@@ -1,0 +1,181 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+}
+
+.form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
+  color: var(--bs-secondary-color);
+  text-align: end;
+}
+
+.form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
+  text-align: start;
+}
+/* ========== Identity Pages Styling ========== */
+
+/* خلفية الصفحة */
+.identity-page {
+    background: linear-gradient(135deg, #F8FAFC 0%, #E2E8F0 100%);
+    min-height: calc(100vh - 200px);
+}
+
+body.dark-mode .identity-page {
+    background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+}
+
+/* بطاقة الإعدادات */
+.identity-card {
+    background: #FFFFFF;
+    border: none;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+
+body.dark-mode .identity-card {
+    background: #1E293B;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+/* رأس البطاقة */
+.identity-card .card-header {
+    background: linear-gradient(135deg, #1E3A5F 0%, #2C7DA0 100%);
+    color: white;
+    padding: 20px;
+    border-bottom: none;
+}
+
+body.dark-mode .identity-card .card-header {
+    background: linear-gradient(135deg, #2C3E66 0%, #1E88E5 100%);
+}
+
+/* أزرار الصفحة */
+.identity-card .btn-primary {
+    background: linear-gradient(135deg, #2C7DA0 0%, #1F5068 100%);
+    border: none;
+    border-radius: 10px;
+    padding: 10px 20px;
+    transition: all 0.3s;
+}
+
+    .identity-card .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(44,125,160,0.3);
+    }
+
+.identity-card .btn-danger {
+    background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+    border: none;
+}
+
+/* روابط جانبية */
+.identity-card .nav-pills .nav-link {
+    color: #1E293B;
+    border-radius: 10px;
+    padding: 10px 15px;
+    transition: all 0.3s;
+}
+
+body.dark-mode .identity-card .nav-pills .nav-link {
+    color: #E2E8F0;
+}
+
+.identity-card .nav-pills .nav-link.active {
+    background: linear-gradient(135deg, #2C7DA0 0%, #1F5068 100%);
+    color: white;
+}
+
+.identity-card .nav-pills .nav-link:hover:not(.active) {
+    background: #F1F5F9;
+    color: #2C7DA0;
+}
+
+body.dark-mode .identity-card .nav-pills .nav-link:hover:not(.active) {
+    background: #334155;
+    color: #1E88E5;
+}
+
+/* حقول الإدخال */
+.identity-card .form-control {
+    border: 1px solid #E2E8F0;
+    border-radius: 10px;
+    padding: 12px 15px;
+    transition: all 0.3s;
+}
+
+body.dark-mode .identity-card .form-control {
+    background-color: #0F172A;
+    border-color: #334155;
+    color: #E2E8F0;
+}
+
+.identity-card .form-control:focus {
+    border-color: #2C7DA0;
+    box-shadow: 0 0 0 3px rgba(44,125,160,0.2);
+}
+
+/* التنبيهات */
+.identity-card .alert-success {
+    background-color: #D1FAE5;
+    border: none;
+    color: #065F46;
+    border-radius: 10px;
+}
+
+body.dark-mode .identity-card .alert-success {
+    background-color: #064E3B;
+    color: #A7F3D0;
+}
+
+.identity-card .alert-danger {
+    background-color: #FEE2E2;
+    border: none;
+    color: #991B1B;
+    border-radius: 10px;
+}
+
+body.dark-mode .identity-card .alert-danger {
+    background-color: #7F1D1D;
+    color: #FECACA;
+}
+
+/* أزرار التبويبات */
+.identity-card .nav-tabs .nav-link {
+    color: #1E293B;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 10px;
+    margin-right: 5px;
+}
+
+body.dark-mode .identity-card .nav-tabs .nav-link {
+    color: #E2E8F0;
+}
+
+.identity-card .nav-tabs .nav-link.active {
+    background: linear-gradient(135deg, #2C7DA0 0%, #1F5068 100%);
+    color: white;
+}
+
+/* وضع Dark Mode للصفحة */
+body.dark-mode .identity-card .text-muted {
+    color: #94A3B8 !important;
+}

@@ -1,0 +1,95 @@
+﻿@model WMSClean.Models.UserDetailsViewModel
+
+@{
+    ViewData["Title"] = "User Details";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header bg-info text-white">
+                    <h4 class="mb-0"><i class="fas fa-user-circle"></i> User Information</h4>
+                </div>
+                <div class="card-body">
+                    <table class="table">
+                        <tr><th>Email</th><td>@Model.Email</td></tr>
+                        <tr><th>Username</th><td>@Model.UserName</td></tr>
+                        <tr>
+                            <th>Email Confirmed</th>
+                            <td>
+                                @if (Model.EmailConfirmed)
+                                {
+                                    <span class="badge bg-success">Yes</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-warning">No</span>
+                                }
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Roles</th>
+                            <td>
+                                @if (Model.Roles.Any())
+                                {
+                                    foreach (var role in Model.Roles)
+                                    {
+                                        <span class="badge bg-primary me-1">@role</span>
+                                    }
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">No role assigned</span>
+                                }
+                            </td>
+                        </tr>
+                        <tr><th>User ID</th><td><code>@Model.Id</code></td></tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0"><i class="fas fa-boxes"></i> Recent Products</h4>
+                </div>
+                <div class="card-body">
+                    @if (!Model.RecentProducts.Any())
+                    {
+                        <p class="text-muted">No products found for this user.</p>
+                    }
+                    else
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr><th>Product</th><th>Weight</th><th>Status</th><th>Date</th></tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var product in Model.RecentProducts)
+                                    {
+                                        <tr>
+                                            <td>@product.Name</td>
+                                            <td>@product.WeightKg kg</td>
+                                            <td>@product.Status</td>
+                                            <td>@product.EntryDate.ToString("yyyy-MM-dd")</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    <a asp-action="Index" class="btn btn-secondary mt-3">
+                        <i class="fas fa-arrow-left"></i> Back to Users
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+}

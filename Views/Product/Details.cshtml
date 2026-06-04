@@ -1,0 +1,105 @@
+﻿@model WMSClean.Models.Product
+
+@{
+    ViewData["Title"] = "Product Details";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-info text-white">
+                    <h3 class="mb-0"><i class="fas fa-info-circle"></i> Product Details</h3>
+                </div>
+                <div class="card-body">
+                    @{
+                        var endDate = Model.ExitDate ?? DateTime.Now;
+                        var totalHours = (endDate - Model.EntryDate).TotalHours;
+                        var days = Math.Floor(totalHours / 24);
+                        var hours = totalHours % 24;
+                        var storageFee = totalHours * Model.WeightKg * (double)Model.PricePerCubicMeterPerDay;
+                    }
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5 class="text-muted">Product Information</h5>
+                            <table class="table table-sm">
+                                <tr><th>Name</th><td>@Model.Name</td></tr>
+                                <tr><th>Weight</th><td>@Model.WeightKg kg</td></tr>
+                                <tr><th>Tracking Number</th><td><code>@Model.TrackingNumber</code></td></tr>
+                                <tr><th>Invoice Number</th><td>@Model.InvoiceNumber</td></tr>
+                                <tr><th>Warehouse</th><td>@Model.Warehouse?.Name</td></tr>
+                                <tr><th>Storage Zone</th><td>@(Model.StorageZone?.ZoneName ?? "Not assigned")</td></tr>
+                                <tr>
+                                    <th>Status</th>
+                                    <td>
+                                        @if (Model.Status == "In Warehouse")
+                                        {
+                                            <span class="badge bg-success">In Warehouse</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">Exited on @Model.ExitDate?.ToString("yyyy-MM-dd HH:mm")</span>
+                                        }
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <h5 class="text-muted">Storage & Pricing</h5>
+                            <table class="table table-sm">
+                                <tr><th>Entry Date</th><td>@Model.EntryDate.ToString("yyyy-MM-dd HH:mm")</td></tr>
+                                <tr><th>Exit Date</th><td>@(Model.ExitDate?.ToString("yyyy-MM-dd HH:mm") ?? "Not exited yet")</td></tr>
+                                <tr class="table-info">
+                                    <th>Storage Duration</th>
+                                    <td>
+                                        <strong>@days days @Math.Floor(hours) hours</strong>
+                                        <br /><small>(@Math.Round(totalHours, 2) total hours)</small>
+                                    </td>
+                                </tr>
+                                <tr><th>Price per hour per kg</th><td>@Model.PricePerCubicMeterPerDay.ToString("C")</td></tr>
+                                <tr class="table-success">
+                                    <th>Total Storage Fee</th>
+                                    <td>
+                                        <span class="fs-4 fw-bold text-success">@storageFee.ToString("C")</span>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="row mt-3">
+                        <div class="col-md-12">
+                            <h5 class="text-muted">Contact Information</h5>
+                            <table class="table table-sm">
+                                <tr><th>Sender Email</th><td>@Model.SenderEmail</td></tr>
+                                <tr><th>Receiver Email</th><td>@Model.ReceiverEmail</td></tr>
+                            </table>
+                        </div>
+                    </div>
+
+                    <hr />
+
+                    <div class="d-flex justify-content-between">
+                        <a asp-action="PrintLabel" asp-route-id="@Model.Id" class="btn btn-primary">
+                            <i class="fas fa-print"></i> Print Label
+                        </a>
+                        @if (Model.Status != "Exited")
+                        {
+                            <a asp-action="ExitProduct" asp-route-id="@Model.Id" class="btn btn-warning" onclick="return confirm('Exit this product?')">
+                                <i class="fas fa-sign-out-alt"></i> Exit Product
+                            </a>
+                        }
+                        <a asp-action="Index" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Back to List
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+}

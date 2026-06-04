@@ -1,0 +1,78 @@
+﻿@model WMSClean.Models.Schedule
+
+@{
+    ViewData["Title"] = "New Request";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0"><i class="fas fa-plus-circle"></i> Submit Storage Request</h3>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Create" method="post">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="ProductName" class="form-label fw-bold">Product Name</label>
+                            <input asp-for="ProductName" class="form-control" placeholder="Enter product name" required />
+                            <span asp-validation-for="ProductName" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="WeightKg" class="form-label fw-bold">Weight (kg)</label>
+                            <div class="input-group">
+                                <input asp-for="WeightKg" class="form-control" type="number" step="0.01" placeholder="0.00" required />
+                                <span class="input-group-text">kg</span>
+                            </div>
+                            <span asp-validation-for="WeightKg" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="SenderEmail" class="form-label fw-bold">Sender Email</label>
+                            <input asp-for="SenderEmail" class="form-control" type="email" placeholder="sender@example.com" required />
+                            <span asp-validation-for="SenderEmail" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="ReceiverEmail" class="form-label fw-bold">Receiver Email</label>
+                            <input asp-for="ReceiverEmail" class="form-control" type="email" placeholder="receiver@example.com" required />
+                            <span asp-validation-for="ReceiverEmail" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="WarehouseId" class="form-label fw-bold">Warehouse</label>
+                            <select asp-for="WarehouseId" class="form-select" asp-items="@(new SelectList(ViewBag.Warehouses, "Id", "Name"))" required>
+                                <option value="">-- Select Warehouse --</option>
+                            </select>
+                            <span asp-validation-for="WarehouseId" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Notes" class="form-label fw-bold">Additional Notes</label>
+                            <textarea asp-for="Notes" class="form-control" rows="3" placeholder="Any special requirements?"></textarea>
+                            <span asp-validation-for="Notes" class="text-danger"></span>
+                        </div>
+
+                        <hr />
+
+                        <div class="d-flex justify-content-between">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-paper-plane"></i> Submit Request
+                            </button>
+                            <a asp-action="MyRequests" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> Back to My Requests
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

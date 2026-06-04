@@ -1,0 +1,174 @@
+﻿@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="container mt-4">
+    <h1><i class="fas fa-tachometer-alt"></i> Analytics Dashboard</h1>
+    <p class="text-muted">Real-time insights and statistics for your warehouse operations.</p>
+
+    <!-- Stats Cards -->
+    <div class="row mt-4 g-4">
+        <div class="col-md-3">
+            <div class="card text-white bg-primary">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title">Total Products</h6>
+                            <h2 class="mb-0">@ViewBag.TotalProducts</h2>
+                        </div>
+                        <i class="fas fa-boxes fa-2x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-success">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title">In Warehouse</h6>
+                            <h2 class="mb-0">@ViewBag.ActiveProducts</h2>
+                        </div>
+                        <i class="fas fa-check-circle fa-2x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-warning">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title">Pending Requests</h6>
+                            <h2 class="mb-0">@ViewBag.PendingSchedules</h2>
+                        </div>
+                        <i class="fas fa-clock fa-2x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-info">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title">Total Revenue</h6>
+                            <h2 class="mb-0">@ViewBag.TotalRevenue</h2>
+                        </div>
+                        <i class="fas fa-dollar-sign fa-2x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="row mt-4">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-chart-line"></i> Monthly Product Entries</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="productsChart" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0"><i class="fas fa-chart-pie"></i> Warehouse Distribution</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="warehouseChart" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Stats Row -->
+    <div class="row mt-4 g-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="fas fa-warehouse"></i> Storage Overview</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-6">
+                            <h3>@ViewBag.TotalWarehouses</h3>
+                            <p class="text-muted">Total Warehouses</p>
+                        </div>
+                        <div class="col-6">
+                            <h3>@ViewBag.TotalStorageZones</h3>
+                            <p class="text-muted">Storage Zones</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="fas fa-chart-simple"></i> Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <a asp-controller="Product" asp-action="Create" class="btn btn-primary m-1"><i class="fas fa-plus"></i> Add Product</a>
+                    <a asp-controller="Warehouse" asp-action="Create" class="btn btn-success m-1"><i class="fas fa-warehouse"></i> Add Warehouse</a>
+                    <a asp-controller="Report" asp-action="Index" class="btn btn-secondary m-1"><i class="fas fa-file-excel"></i> Reports</a>
+                    <a asp-controller="Schedule" asp-action="AllRequests" class="btn btn-warning m-1"><i class="fas fa-tasks"></i> Manage Requests</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Monthly Products Chart
+        const monthlyData = @Html.Raw(ViewBag.MonthlyData);
+        const ctx = document.getElementById('productsChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: monthlyData.map(d => d.month),
+                datasets: [{
+                    label: 'Products Added',
+                    data: monthlyData.map(d => d.count),
+                    borderColor: '#667eea',
+                    backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: { position: 'top' }
+                }
+            }
+        });
+
+        // Warehouse Distribution Chart (Pie)
+        const warehouseCtx = document.getElementById('warehouseChart').getContext('2d');
+        new Chart(warehouseCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Active Products', 'Exited Products', 'Pending Requests'],
+                datasets: [{
+                    data: [@ViewBag.ActiveProducts, @ViewBag.ExitedProducts, @ViewBag.PendingSchedules],
+                    backgroundColor: ['#28a745', '#6c757d', '#ffc107'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: { position: 'bottom' }
+                }
+            }
+        });
+    </script>
+}

@@ -1,0 +1,29 @@
+﻿@model WMSClean.Models.Warehouse
+
+@{
+    ViewData["Title"] = "Create Warehouse";
+}
+
+<h1>Create Warehouse</h1>
+
+<form asp-action="Create">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="form-group">
+        <label asp-for="Name"></label>
+        <input asp-for="Name" class="form-control" required />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="MaxItems"></label>
+        <input asp-for="MaxItems" class="form-control" type="number" required />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="MaxWeightKg"></label>
+        <input asp-for="MaxWeightKg" class="form-control" type="number" step="0.1" required />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Create</button>
+    <a asp-action="Index" class="btn btn-secondary">Back</a>
+</form>

@@ -1,0 +1,112 @@
+﻿@using WMSClean.ViewModels
+@model NotificationViewModel
+
+<div class="dropdown">
+    <button class="btn btn-outline-secondary position-relative" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+        <i class="fas fa-bell"></i>
+        @if (Model.UnreadCount > 0)
+        {
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                @Model.UnreadCount
+                <span class="visually-hidden">unread notifications</span>
+            </span>
+        }
+    </button>
+    
+    <ul class="dropdown-menu dropdown-menu-end" style="min-width: 350px; max-height: 400px; overflow-y: auto;">
+        @if (!Model.Notifications.Any())
+        {
+            <li class="dropdown-item text-center text-muted">
+                <i class="fas fa-inbox"></i> No notifications
+            </li>
+        }
+        else
+        {
+            @foreach (var notification in Model.Notifications.Take(10))
+            {
+                <li>
+                    <a class="dropdown-item notification-item @(!notification.IsRead ? "bg-light" : "")"
+                           href="#"
+                           data-id="@notification.Id"
+                           data-link="@notification.Link"
+                           style="white-space: normal;">
+                        <div class="d-flex align-items-start">
+                            <div class="me-2">
+                                @if (notification.Type == "Success")
+                                {
+                                    <i class="fas fa-check-circle text-success"></i>
+                                }
+                                else if (notification.Type == "Error")
+                                {
+                                    <i class="fas fa-exclamation-circle text-danger"></i>
+                                }
+                                else if (notification.Type == "Warning")
+                                {
+                                    <i class="fas fa-exclamation-triangle text-warning"></i>
+                                }
+                                else
+                                {
+                                    <i class="fas fa-info-circle text-info"></i>
+                                }
+                            </div>
+                            <div class="flex-grow-1">
+                                <div class="fw-bold">@notification.Title</div>
+                                <small class="text-muted">@notification.Message</small>
+                                <br />
+                                <small class="text-muted">@notification.CreatedAt.ToString("yyyy-MM-dd HH:mm")</small>
+                            </div>
+                            @if (!notification.IsRead)
+                            {
+                                <div class="ms-2">
+                                    <span class="badge bg-primary rounded-pill">New</span>
+                                </div>
+                            }
+                        </div>
+                    </a>
+                </li>
+                @if (notification != Model.Notifications.Last())
+                {
+                    <li><hr class="dropdown-divider"></li>
+                }
+            }
+        }
+        
+        @if (Model.Notifications.Any())
+        {
+            <li><hr class="dropdown-divider"></li>
+            <li class="dropdown-item text-center">
+                <a href="#" onclick="markAllAsRead()" class="text-primary">Mark all as read</a>
+            </li>
+        }
+    </ul>
+</div>
+
+<style>
+    .notification-item:hover {
+        background-color: #f8f9fa;
+        cursor: pointer;
+    }
+</style>
+
+<script>
+    document.querySelectorAll('.notification-item').forEach(item => {
+        item.addEventListener('click', async function(e) {
+            e.preventDefault();
+            const id = this.dataset.id;
+            const link = this.dataset.link;
+            
+            await fetch(`/Notification/MarkAsRead/${id}`, { method: 'POST' });
+            
+            if (link) {
+                window.location.href = link;
+            } else {
+                location.reload();
+            }
+        });
+    });
+    
+    async function markAllAsRead() {
+        await fetch('/Notification/MarkAllAsRead', { method: 'POST' });
+        location.reload();
+    }
+</script>

@@ -1,0 +1,59 @@
+/* identity.css - تحسينات إضافية لصفحات Identity */
+
+/* الترويسة الرئيسية */
+h1, h2, h3 {
+    background: linear-gradient(135deg, #1E3A5F 0%, #2C7DA0 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+body.dark-mode h1,
+body.dark-mode h2,
+body.dark-mode h3 {
+    background: linear-gradient(135deg, #E2E8F0 0%, #1E88E5 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+/* حالة hover للأزرار الثانوية */
+.identity-card .btn-secondary {
+    background-color: #F1F5F9;
+    border: 1px solid #E2E8F0;
+    color: #1E293B;
+}
+
+body.dark-mode .identity-card .btn-secondary {
+    background-color: #334155;
+    border-color: #475569;
+    color: #E2E8F0;
+}
+
+.identity-card .btn-secondary:hover {
+    background-color: #E2E8F0;
+    transform: translateY(-2px);
+}
+
+body.dark-mode .identity-card .btn-secondary:hover {
+    background-color: #475569;
+}
+
+/* أيقونات القائمة الجانبية */
+.identity-card .nav-pills .nav-link i {
+    margin-right: 10px;
+    width: 20px;
+    text-align: center;
+}
+
+/* خط فاصل مزخرف */
+.identity-card hr {
+    border: none;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #2C7DA0, transparent);
+    margin: 20px 0;
+}
+
+body.dark-mode .identity-card hr {
+    background: linear-gradient(90deg, transparent, #1E88E5, transparent);
+}

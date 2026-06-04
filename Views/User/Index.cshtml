@@ -1,0 +1,120 @@
+﻿@model List<WMSClean.Models.UserRoleViewModel>
+
+@{
+    ViewData["Title"] = "User Management";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1><i class="fas fa-users"></i> User Management</h1>
+        <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back
+        </a>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle"></i> @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-circle"></i> @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="card shadow">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle" id="usersTable">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Email</th>
+                            <th>Username</th>
+                            <th>Email Confirmed</th>
+                            <th>Current Role</th>
+                            <th>Change Role</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var user in Model)
+                        {
+                            <tr>
+                                <td>@user.Email</td>
+                                    <td>@user.UserName</td>
+                                <td>
+                                    @if (user.EmailConfirmed)
+                                    {
+                                        <span class="badge bg-success"><i class="fas fa-check"></i> Confirmed</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-warning"><i class="fas fa-clock"></i> Pending</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (user.Roles.Any())
+                                    {
+                                        <span class="badge bg-primary">@string.Join(", ", user.Roles)</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">No Role</span>
+                                    }
+                                        </td>
+                                <td>
+                                    <form asp-action="AssignRole" method="post" class="d-flex gap-2">
+                                        <input type="hidden" name="userId" value="@user.Id" />
+                                        <select name="role" class="form-select form-select-sm" style="width: 120px;">
+                                            <option value="">-- None --</option>
+                                            <option value="Admin" selected="@(user.Roles.Contains("Admin") ? "selected" : null)">Admin</option>
+                                            <option value="User" selected="@(user.Roles.Contains("User") ? "selected" : null)">User</option>
+                                        </select>
+                                        <button type="submit" class="btn btn-sm btn-primary">
+                                            <i class="fas fa-save"></i> Save
+                                        </button>
+                                    </form>
+                                        </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a asp-action="Details" asp-route-id="@user.Id" class="btn btn-sm btn-info">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <form asp-action="Delete" method="post" onsubmit="return confirm('Delete this user?')" class="d-inline">
+                                            <input type="hidden" name="id" value="@user.Id" />
+                                            <button type="submit" class="btn btn-sm btn-danger">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                        </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" />
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#usersTable').DataTable({
+                language: { 
+                    search: "Search:", 
+                    lengthMenu: "Show _MENU_ entries", 
+                    info: "Showing _START_ to _END_ of _TOTAL_ users" 
+                },
+                order: [[0, 'asc']]
+            });
+        });
+    </script>
+}

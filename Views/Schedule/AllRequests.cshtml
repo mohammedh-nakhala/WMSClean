@@ -1,0 +1,147 @@
+﻿@model IEnumerable<WMSClean.Models.Schedule>
+
+@{
+    ViewData["Title"] = "Manage Requests";
+}
+
+<div class="container mt-4">
+    <h1><i class="fas fa-tasks"></i> Manage Storage Requests</h1>
+    <p class="text-muted">Review and approve incoming storage requests from users.</p>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle"></i> @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-circle"></i> @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="table-responsive">
+        <table class="table table-hover align-middle" id="requestsTable">
+            <thead class="table-dark">
+                <tr>
+                    <th>Product</th>
+                    <th>Weight (kg)</th>
+                    <th>Warehouse</th>
+                    <th>User</th>
+                    <th>Request Date</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            <strong>@item.ProductName</strong>
+                            <br /><small class="text-muted">@item.Notes</small>
+                        </td>
+                        <td>@item.WeightKg kg</td>
+                            <td>@item.Warehouse?.Name</td>
+                                <td><small>@(item.UserId?.Substring(0, Math.Min(8, item.UserId?.Length ?? 0)))...</small></td>
+                                    <td>@item.RequestedDate.ToString("yyyy-MM-dd HH:mm")</td>
+                        <td>
+                            @if (item.Status == ScheduleStatus.Pending)
+                            {
+                                <span class="badge bg-warning text-dark">⏳ Pending</span>
+                            }
+                            else if (item.Status == ScheduleStatus.Approved)
+                            {
+                                <span class="badge bg-success">✓ Approved</span>
+                            }
+                            else if (item.Status == ScheduleStatus.Rejected)
+                            {
+                                <span class="badge bg-danger">✗ Rejected</span>
+                            }
+                            else if (item.Status == ScheduleStatus.Completed)
+                            {
+                                <span class="badge bg-secondary">Completed</span>
+                            }
+                        </td>
+                        <td>
+                            @if (item.Status == ScheduleStatus.Pending)
+                            {
+                                <button onclick="approveRequest(@item.Id)" class="btn btn-sm btn-success">
+                                    <i class="fas fa-check"></i> Approve
+                                </button>
+                                <button onclick="showRejectModal(@item.Id)" class="btn btn-sm btn-danger">
+                                    <i class="fas fa-times"></i> Reject
+                                </button>
+                            }
+                         </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Reject Modal -->
+<div class="modal fade" id="rejectModal" tabindex="-1" aria-labelledby="rejectModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="rejectModalLabel"><i class="fas fa-exclamation-triangle"></i> Reject Request</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="rejectId" />
+                <div class="mb-3">
+                    <label class="form-label">Rejection Reason</label>
+                    <textarea id="rejectReason" class="form-control" rows="3" placeholder="Enter reason for rejection..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" onclick="submitReject()">Confirm Reject</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" />
+    <script>
+        $(document).ready(function() {
+            $('#requestsTable').DataTable({
+                language: { 
+                    search: "Search:", 
+                    lengthMenu: "Show _MENU_ entries", 
+                    info: "Showing _START_ to _END_ of _TOTAL_ requests" 
+                },
+                order: [[4, 'desc']]
+            });
+        });
+
+        function approveRequest(id) {
+            if (confirm('Are you sure you want to approve this request?')) {
+                window.location.href = '/Schedule/Approve/' + id;
+            }
+        }
+
+        function showRejectModal(id) {
+            document.getElementById('rejectId').value = id;
+            var modal = new bootstrap.Modal(document.getElementById('rejectModal'));
+            modal.show();
+        }
+
+        function submitReject() {
+            var id = document.getElementById('rejectId').value;
+            var reason = document.getElementById('rejectReason').value;
+            if (reason.trim() === '') {
+                alert('Please enter a rejection reason');
+                return;
+            }
+            window.location.href = '/Schedule/Reject?id=' + id + '&reason=' + encodeURIComponent(reason);
+        }
+    </script>
+}

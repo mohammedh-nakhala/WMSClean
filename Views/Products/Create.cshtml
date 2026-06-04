@@ -1,0 +1,294 @@
+﻿@model WMSClean.Models.Product
+
+@{
+    ViewData["Title"] = "Add Product";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0"><i class="fas fa-box"></i> Add New Product</h3>
+                </div>
+                <div class="card-body">
+                    @if (ViewBag.Warehouses == null || !((IEnumerable<WMSClean.Models.Warehouse>)ViewBag.Warehouses).Any())
+                    {
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            No warehouses found! Please <a href="/Warehouse/Create">create a warehouse</a> first.
+                        </div>
+                    }
+                    else
+                    {
+                        <form asp-action="Create" method="post" id="productForm">
+                            <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                            <!-- Basic Information -->
+                            <div class="card mb-3">
+                                <div class="card-header bg-secondary text-white">
+                                    <h5 class="mb-0"><i class="fas fa-info-circle"></i> Basic Information</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <label asp-for="Name" class="form-label fw-bold">Product Name</label>
+                                        <input asp-for="Name" class="form-control" placeholder="Enter product name" required />
+                                        <span asp-validation-for="Name" class="text-danger"></span>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label asp-for="ProductType" class="form-label fw-bold">Product Type</label>
+                                                <select asp-for="ProductType" class="form-select" id="ProductType" required>
+                                                    <option value="General">📦 General</option>
+                                                    <option value="Cold">❄️ Cold Storage</option>
+                                                    <option value="Hazardous">⚠️ Hazardous Materials</option>
+                                                    <option value="Fragile">🥚 Fragile Items</option>
+                                                </select>
+                                                <small class="text-muted">Determines which storage zone will be used</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label asp-for="WeightKg" class="form-label fw-bold">Weight (Kg)</label>
+                                                <input asp-for="WeightKg" class="form-control" type="number" step="0.01" required />
+                                                <span asp-validation-for="WeightKg" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Dimensions Section -->
+                            <div class="card mb-3">
+                                <div class="card-header bg-secondary text-white">
+                                    <h5 class="mb-0"><i class="fas fa-ruler-combined"></i> Product Dimensions</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="mb-3">
+                                                <label asp-for="LengthCm" class="form-label">Length (cm)</label>
+                                                <input asp-for="LengthCm" class="form-control" type="number" step="1" value="50" required />
+                                                <span asp-validation-for="LengthCm" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="mb-3">
+                                                <label asp-for="WidthCm" class="form-label">Width (cm)</label>
+                                                <input asp-for="WidthCm" class="form-control" type="number" step="1" value="40" required />
+                                                <span asp-validation-for="WidthCm" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="mb-3">
+                                                <label asp-for="HeightCm" class="form-label">Height (cm)</label>
+                                                <input asp-for="HeightCm" class="form-control" type="number" step="1" value="30" required />
+                                                <span asp-validation-for="HeightCm" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="alert alert-info mt-2" id="volumePreview">
+                                        <i class="fas fa-calculator"></i> Volume: <strong>0.06 m³</strong> | Estimated storage fee: <strong>Under calculation</strong>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Contact Information -->
+                            <div class="card mb-3">
+                                <div class="card-header bg-secondary text-white">
+                                    <h5 class="mb-0"><i class="fas fa-envelope"></i> Contact Information</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label asp-for="SenderEmail" class="form-label fw-bold">Sender Email</label>
+                                                <input asp-for="SenderEmail" class="form-control" type="email" placeholder="sender@example.com" required />
+                                                <span asp-validation-for="SenderEmail" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label asp-for="ReceiverEmail" class="form-label fw-bold">Receiver Email</label>
+                                                <input asp-for="ReceiverEmail" class="form-control" type="email" placeholder="receiver@example.com" required />
+                                                <span asp-validation-for="ReceiverEmail" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Storage Assignment -->
+                            <div class="card mb-3">
+                                <div class="card-header bg-secondary text-white">
+                                    <h5 class="mb-0"><i class="fas fa-warehouse"></i> Storage Assignment</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label asp-for="WarehouseId" class="form-label fw-bold">Warehouse</label>
+                                                <select asp-for="WarehouseId" class="form-select" id="WarehouseId" required>
+                                                    <option value="">-- Select Warehouse --</option>
+                                                    @foreach (var wh in ViewBag.Warehouses)
+                                                    {
+                                                        <option value="@wh.Id">@wh.Name</option>
+                                                    }
+                                                </select>
+                                                <span asp-validation-for="WarehouseId" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label asp-for="StorageZoneId" class="form-label fw-bold">Storage Zone</label>
+                                                <select asp-for="StorageZoneId" class="form-select" id="StorageZoneId">
+                                                    <option value="">-- Auto-assign based on product type --</option>
+                                                    @if (ViewBag.StorageZones != null)
+                                                    {
+                                                        @foreach (var zone in ViewBag.StorageZones)
+                                                        {
+                                                            <option value="@zone.Id" data-type="@zone.ZoneType" data-price="@zone.PricePerCubicMeterPerDay">
+                                                                @zone.ZoneName (@zone.ZoneType) - @zone.PricePerCubicMeterPerDay.ToString("C")/m³/day
+                                                            </option>
+                                                        }
+                                                    }
+                                                </select>
+                                                <span asp-validation-for="StorageZoneId" class="text-danger"></span>
+                                                <div id="zoneRecommendation" class="mt-2"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Pricing Information -->
+                            <div class="card mb-3">
+                                <div class="card-header bg-secondary text-white">
+                                    <h5 class="mb-0"><i class="fas fa-dollar-sign"></i> Pricing Information</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label asp-for="PricePerCubicMeterPerDay" class="form-label fw-bold">Storage Rate (per m³/day)</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-text">$</span>
+                                                    <input asp-for="PricePerCubicMeterPerDay" class="form-control" type="number" step="0.5" value="5" required />
+                                                </div>
+                                                <small class="text-muted">Default rate if zone rate is not applied</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label class="form-label fw-bold">Estimated Total Fee</label>
+                                                <div class="alert alert-success text-center" id="estimatedFee">
+                                                    <strong>$0.00</strong>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <hr />
+
+                            <div class="d-flex justify-content-between">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save"></i> Save Product
+                                </button>
+                                <a asp-action="Index" class="btn btn-secondary">
+                                    <i class="fas fa-arrow-left"></i> Cancel
+                                </a>
+                            </div>
+                        </form>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Calculate volume and estimated fee in real-time
+        function calculateVolume() {
+            const length = parseFloat(document.getElementById('LengthCm').value) || 0;
+            const width = parseFloat(document.getElementById('WidthCm').value) || 0;
+            const height = parseFloat(document.getElementById('HeightCm').value) || 0;
+            
+            const volumeM3 = (length * width * height) / 1000000;
+            const weight = parseFloat(document.querySelector('[name="WeightKg"]').value) || 0;
+            const weightFactor = Math.max(1, weight / 50);
+            
+            // Get price from selected zone or default
+            let pricePerDay = parseFloat(document.querySelector('[name="PricePerCubicMeterPerDay"]').value) || 5;
+            const selectedZone = document.getElementById('StorageZoneId').selectedOptions[0];
+            if (selectedZone && selectedZone.dataset.price) {
+                pricePerDay = parseFloat(selectedZone.dataset.price);
+                document.querySelector('[name="PricePerCubicMeterPerDay"]').value = pricePerDay;
+            }
+            
+            // Update volume preview
+            document.getElementById('volumePreview').innerHTML = `
+                <i class="fas fa-calculator"></i> Volume: <strong>${volumeM3.toFixed(3)} m³</strong> |
+                Weight Factor: <strong>${weightFactor.toFixed(2)}</strong> |
+                Estimated daily fee: <strong>${(volumeM3 * pricePerDay * weightFactor).toFixed(2)} EGP/day</strong>
+            `;
+            
+            // Update estimated total fee (for 30 days as example)
+            const estimatedDays = 30;
+            const totalFee = volumeM3 * pricePerDay * weightFactor * estimatedDays;
+            document.getElementById('estimatedFee').innerHTML = `<strong>${totalFee.toFixed(2)} EGP</strong><br><small>Based on 30 days storage</small>`;
+        }
+        
+        // Auto-assign zone recommendation
+        async function recommendZone() {
+            const productType = document.getElementById('ProductType').value;
+            const warehouseId = document.getElementById('WarehouseId').value;
+            
+            if (!warehouseId) return;
+            
+            try {
+                const response = await fetch(`/StorageZone/GetRecommendedZone?productType=${productType}&warehouseId=${warehouseId}`);
+                const data = await response.json();
+                
+                if (data.zoneId) {
+                    const zoneSelect = document.getElementById('StorageZoneId');
+                    for (let i = 0; i < zoneSelect.options.length; i++) {
+                        if (zoneSelect.options[i].value == data.zoneId) {
+                            zoneSelect.selectedIndex = i;
+                            break;
+                        }
+                    }
+                    document.getElementById('zoneRecommendation').innerHTML = `
+                        <div class="alert alert-success">
+                            <i class="fas fa-robot"></i> Recommended zone: <strong>${data.zoneName}</strong><br>
+                            Rate: ${data.pricePerDay} EGP/m³/day | Available volume: ${data.availableVolume?.toFixed(2)} m³
+                        </div>
+                    `;
+                    calculateVolume();
+                }
+            } catch (error) {
+                console.error('Error getting zone recommendation:', error);
+            }
+        }
+        
+        // Event listeners
+        document.getElementById('LengthCm').addEventListener('input', calculateVolume);
+        document.getElementById('WidthCm').addEventListener('input', calculateVolume);
+        document.getElementById('HeightCm').addEventListener('input', calculateVolume);
+        document.querySelector('[name="WeightKg"]').addEventListener('input', calculateVolume);
+        document.getElementById('StorageZoneId').addEventListener('change', calculateVolume);
+        document.getElementById('ProductType').addEventListener('change', recommendZone);
+        document.getElementById('WarehouseId').addEventListener('change', recommendZone);
+        
+        // Calculate initial volume
+        calculateVolume();
+    </script>
+    
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

@@ -1,0 +1,133 @@
+﻿@model WMSClean.Models.Product
+
+@{
+    ViewData["Title"] = "Storage Fee Details";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0"><i class="fas fa-calculator"></i> Storage Fee Details</h3>
+                </div>
+                <div class="card-body">
+                    <!-- Product Summary -->
+                    <div class="alert alert-info">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <h5>@Model.Name</h5>
+                                <p class="mb-0">
+                                    <strong>Tracking Number:</strong> @Model.TrackingNumber<br />
+                                    <strong>Invoice Number:</strong> @Model.InvoiceNumber<br />
+                                    <strong>Status:</strong> <span class="badge bg-success">@Model.Status</span>
+                                </p>
+                            </div>
+                            <div class="col-md-4 text-end">
+                                <img src="https://cdn-icons-png.flaticon.com/512/2331/2331970.png" alt="Product" style="height: 60px;">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Dimensions & Storage Info -->
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card bg-light mb-3">
+                                <div class="card-header bg-secondary text-white">
+                                    <h6 class="mb-0"><i class="fas fa-ruler-combined"></i> Product Dimensions</h6>
+                                </div>
+                                <div class="card-body">
+                                    <table class="table table-sm">
+                                        <tr><th>Length</th><td>@Model.LengthCm cm</td></tr>
+                                        <tr><th>Width</th><td>@Model.WidthCm cm</td></tr>
+                                        <tr><th>Height</th><td>@Model.HeightCm cm</td></tr>
+                                        <tr class="table-primary"><th>Volume</th><td><strong>@Model.VolumeCbm.ToString("F3") m³</strong></td></tr>
+                                        <tr><th>Weight</th><td>@Model.WeightKg kg</td></tr>
+                                        <tr><th>Weight Factor</th><td>@Math.Max(1, Model.WeightKg / 50).ToString("F2")</td></tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card bg-light mb-3">
+                                <div class="card-header bg-secondary text-white">
+                                    <h6 class="mb-0"><i class="fas fa-clock"></i> Storage Information</h6>
+                                </div>
+                                <div class="card-body">
+                                    <table class="table table-sm">
+                                        <tr><th>Warehouse</th><td>@Model.Warehouse?.Name</td></tr>
+                                        <tr><th>Storage Zone</th><td>@(Model.StorageZone?.ZoneName ?? "Not Assigned")</td></tr>
+                                        <tr><th>Zone Type</th><td>@(Model.StorageZone?.ZoneType ?? "General")</td></tr>
+                                        <tr><th>Entry Date</th><td>@Model.EntryDate.ToString("yyyy-MM-dd HH:mm")</td></tr>
+                                        <tr><th>Exit Date</th><td>@(Model.ExitDate?.ToString("yyyy-MM-dd HH:mm") ?? "Still in warehouse")</td></tr>
+                                        @{
+                                            var storageDays = (DateTime.Now - Model.EntryDate).Days;
+                                            if (storageDays < 1) storageDays = 1;
+                                        }
+                                        <tr class="table-primary"><th>Storage Days</th><td><strong>@storageDays days</strong></td></tr>
+                                        <tr><th>Rate per m³/day</th><td>@(Model.StorageZone?.PricePerCubicMeterPerDay.ToString("C") ?? Model.PricePerCubicMeterPerDay.ToString("C"))</td></tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Fee Calculation -->
+                    <div class="card bg-success text-white mb-3">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-dollar-sign"></i> Fee Calculation</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row text-center">
+                                <div class="col-md-3">
+                                    <h6>Volume</h6>
+                                    <h4>@Model.VolumeCbm.ToString("F3") m³</h4>
+                                </div>
+                                <div class="col-md-3">
+                                    <h6>× Days</h6>
+                                    <h4>@storageDays days</h4>
+                                </div>
+                                <div class="col-md-3">
+                                    <h6>× Rate</h6>
+                                    <h4>@(Model.StorageZone?.PricePerCubicMeterPerDay.ToString("C") ?? Model.PricePerCubicMeterPerDay.ToString("C"))</h4>
+                                </div>
+                                <div class="col-md-3">
+                                    <h6>× Weight Factor</h6>
+                                    <h4>@Math.Max(1, Model.WeightKg / 50).ToString("F2")</h4>
+                                </div>
+                            </div>
+                            <hr class="bg-white">
+                            <div class="text-center">
+                                <h5>Total Storage Fee</h5>
+                                <h2 class="display-4" style="font-size: 3rem;">@Model.TotalStorageFee.ToString("C")</h2>
+                                <small class="text-white-50">Calculated based on: Volume × Days × Rate × Weight Factor</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Formula Explanation -->
+                    <div class="alert alert-secondary">
+                        <h6><i class="fas fa-info-circle"></i> Calculation Formula:</h6>
+                        <p class="mb-0">
+                            <strong>Storage Fee = Volume (m³) × Storage Days × Rate (per m³/day) × Weight Factor</strong><br />
+                            <small>
+                                Weight Factor = Weight / 50 (minimum 1)<br />
+                                Example: @Model.VolumeCbm.ToString("F3") m³ × @storageDays days × @(Model.StorageZone?.PricePerCubicMeterPerDay.ToString("C") ?? Model.PricePerCubicMeterPerDay.ToString("C")) × @Math.Max(1, Model.WeightKg / 50).ToString("F2") = @Model.TotalStorageFee.ToString("C")
+                            </small>
+                        </p>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="d-flex justify-content-between mt-3">
+                        <a asp-action="PrintLabel" asp-route-id="@Model.Id" class="btn btn-secondary">
+                            <i class="fas fa-print"></i> Print Label
+                        </a>
+                        <a asp-action="Index" class="btn btn-primary">
+                            <i class="fas fa-arrow-left"></i> Back to Products
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

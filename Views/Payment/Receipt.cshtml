@@ -1,0 +1,27 @@
+﻿@model WMSClean.Models.Payment
+
+@{
+    ViewData["Title"] = "Receipt";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white text-center">
+                    <h3>Payment Receipt</h3>
+                </div>
+                <div class="card-body">
+                    <p><strong>Transaction ID:</strong> @Model.TransactionId</p>
+                    <p><strong>Product:</strong> @Model.Product?.Name</p>
+                    <p><strong>Amount:</strong> @Model.Amount.ToString("C")</p>
+                    <p><strong>Date:</strong> @Model.PaymentDate.ToString("yyyy-MM-dd HH:mm")</p>
+                    <p><strong>Status:</strong> <span class="badge bg-success">@Model.Status</span></p>
+                    
+                    <a asp-controller="Product" asp-action="Index" class="btn btn-primary">Back to Products</a>
+                    <button onclick="window.print();" class="btn btn-secondary">Print</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

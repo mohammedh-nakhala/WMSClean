@@ -1,0 +1,92 @@
+﻿@model IEnumerable<WMSClean.Models.Schedule>
+
+@{
+    ViewData["Title"] = "My Requests";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1><i class="fas fa-calendar-alt"></i> My Storage Requests</h1>
+        <a asp-action="Create" class="btn btn-primary">
+            <i class="fas fa-plus"></i> New Request
+        </a>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle"></i> @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info text-center">
+            <i class="fas fa-info-circle"></i> No requests found.
+            <a asp-action="Create">Click here</a> to submit your first request.
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Product Name</th>
+                        <th>Weight (kg)</th>
+                        <th>Warehouse</th>
+                        <th>Request Date</th>
+                        <th>Status</th>
+                        <th>Approved Date</th>
+                        <th>Rejection Reason</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td><strong>@item.ProductName</strong><br /><small class="text-muted">@item.Notes</small></td>
+                            <td>@item.WeightKg kg</td>
+                            <td>@item.Warehouse?.Name</td>
+                            <td>@item.RequestedDate.ToString("yyyy-MM-dd HH:mm")</td>
+                            <td>
+                                @if (item.Status == ScheduleStatus.Pending)
+                                {
+                                    <span class="badge bg-warning text-dark">Pending</span>
+                                }
+                                else if (item.Status == ScheduleStatus.Approved)
+                                {
+                                    <span class="badge bg-success">Approved</span>
+                                }
+                                else if (item.Status == ScheduleStatus.Rejected)
+                                {
+                                    <span class="badge bg-danger">Rejected</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">Completed</span>
+                                }
+                            </td>
+                            <td>@(item.ApprovedDate?.ToString("yyyy-MM-dd HH:mm") ?? "-")</td>
+                            <td>@item.RejectionReason</td>
+                            <td>
+                                @if (item.Status == ScheduleStatus.Pending)
+                                {
+                                    <form asp-action="UpdateStatus" method="post" onsubmit="return confirm('Cancel this request?')">
+                                        <input type="hidden" name="id" value="@item.Id" />
+                                        <input type="hidden" name="status" value="Cancel" />
+                                        <button type="submit" class="btn btn-sm btn-danger">
+                                            <i class="fas fa-times"></i> Cancel
+                                        </button>
+                                    </form>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
